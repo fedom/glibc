@@ -777,7 +777,10 @@ __strptime_internal (rp, fmt, tmp, statep LOCALE_PARAM)
 		  return NULL;
 		val = (val / 100) * 100 + ((val % 100) * 50) / 30;
 	      }
-	    if (val > 1200)
+	    /* valid range UTC-24 to +25, ala POSIX */
+	    if (neg && val > 2400)
+	      return NULL;
+	    if (!neg && val > 2500)
 	      return NULL;
 	    tm->tm_gmtoff = (val * 3600) / 100;
 	    if (neg)
