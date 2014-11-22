@@ -777,7 +777,11 @@ __strptime_internal (rp, fmt, tmp, statep LOCALE_PARAM)
 		  return NULL;
 		val = (val / 100) * 100 + ((val % 100) * 50) / 30;
 	      }
-	    if (val > 1200)
+	    /* minimum UTC-12, used aboard ships */
+	    if (neg && val > 1200)
+	      return NULL;
+	    /* maximum UTC+14, Pacific/Kiritimati and Pacific/Apia summer time */
+	    if (!neg && val > 1400)
 	      return NULL;
 	    tm->tm_gmtoff = (val * 3600) / 100;
 	    if (neg)
