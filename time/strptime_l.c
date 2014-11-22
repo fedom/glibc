@@ -773,8 +773,6 @@ __strptime_internal (rp, fmt, tmp, statep LOCALE_PARAM)
 	    else if (val % 100 >= 60)
 	      /* Minutes valid range is 0 through 59.  */
 	      return NULL;
-	    if (val > 1200)
-	      return NULL;
 	    tm->tm_gmtoff = (val / 100) * 3600 + (val % 100) * 60;
 	    if (neg)
 	      tm->tm_gmtoff = -tm->tm_gmtoff;
