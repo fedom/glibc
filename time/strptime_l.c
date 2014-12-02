@@ -770,19 +770,15 @@ __strptime_internal (rp, fmt, tmp, statep LOCALE_PARAM)
 	    else if (n != 4)
 	      /* Only two or four digits recognized.  */
 	      return NULL;
-	    else
-	      {
-		/* We have to convert the minutes into decimal.  */
-		if (val % 100 >= 60)
-		  return NULL;
-		val = (val / 100) * 100 + ((val % 100) * 50) / 30;
-	      }
+	    else if (val % 100 >= 60)
+	      /* minutes valid range is 0 through 59. */
+	      return NULL;
 	    /* valid range UTC-24 to +25, ala POSIX */
 	    if (neg && val > 2400)
 	      return NULL;
 	    if (!neg && val > 2500)
 	      return NULL;
-	    tm->tm_gmtoff = (val * 3600) / 100;
+	    tm->tm_gmtoff = (val / 100) * 3600 + (val % 100) * 60;
 	    if (neg)
 	      tm->tm_gmtoff = -tm->tm_gmtoff;
 	  }
