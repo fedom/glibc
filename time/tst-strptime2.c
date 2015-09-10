@@ -155,6 +155,13 @@ do_test (void)
   expect = LONG_MAX;
   result |= compare (buf, expect, nresult);
 
+  /* Create and test input string with "Z" input (valid format).
+     Expect tm_gmtoff of 0.  */
+
+  sprintf (buf, "%s Z", dummy_string);
+  expect = 0;
+  result |= compare (buf, expect, nresult);
+
   /* Create and test input strings with sign and digits:
      0 digits (invalid format),
      1 digit (invalid format),
