@@ -749,9 +749,11 @@ __strptime_internal (rp, fmt, tmp, statep LOCALE_PARAM)
 	    rp++;
 	  break;
 	case 'z':
-	  /* We recognize three formats: if two digits are given, these
-	     specify hours.  If fours digits are used, minutes are
-	     also specified.  'Z' is equivalent to +0000.  */
+	  /* We recognize four formats: 1. if two digits are given,
+	     these specify hours.  2. If fours digits are used,
+	     minutes are also specified.  3. A colon can be used
+	     to separate the two groups of two digits (HH:MM).  4. 'Z'
+	     is equivalent to +0000.  */
 	  {
 	    val = 0;
 	    while (ISSPACE (*rp))
@@ -769,6 +771,8 @@ __strptime_internal (rp, fmt, tmp, statep LOCALE_PARAM)
 	      {
 		val = val * 10 + *rp++ - '0';
 		++n;
+		if (*rp == ':' && n == 2)
+		  ++rp;
 	      }
 	    if (n == 2)
 	      val *= 100;

@@ -34,7 +34,8 @@ static bool verbose;
    Note that a valid timezone string contains the following fields:
      Sign field consisting of a '+' or '-' sign,
      Hours field in two decimal digits, and
-     optional Minutes field in two decimal digits.
+     optional Minutes field in two decimal digits. Optionally,
+     a ':' is used to seperate hours and minutes.
 
    This function may write test strings with minutes values outside
    the valid range 00-59.  These are invalid strings and useful for
@@ -55,7 +56,7 @@ static bool verbose;
    range of 00 to 59.  */
 
 static long int
-mkbuf (char *buf, bool neg, unsigned int hhmm, size_t ndigits)
+mkbuf (char *buf, bool neg, bool colon, unsigned int hhmm, size_t ndigits)
 {
   const int mm_max = 59;
   char sign = neg ? '-' : '+';
@@ -65,7 +66,9 @@ mkbuf (char *buf, bool neg, unsigned int hhmm, size_t ndigits)
   long int expect = LONG_MAX;
 
   i = sprintf (buf, "%s %c", dummy_string, sign);
-  snprintf (buf + i, ndigits + 1, "%04u", hhmm);
+  snprintf (buf + i,
+            (colon && ndigits >= 2) ? ndigits + 2 : ndigits + 1,
+            "%02u%s%02u", hh, colon ? ":" : "", mm);
 
   if (mm <= mm_max && (ndigits == 2 || ndigits == 4))
     {
@@ -176,10 +179,18 @@ do_test (void)
       {
 	/* Test both positive and negative signs.  */
 
-	expect = mkbuf (buf, false, hhmm, ndigits);
+	expect = mkbuf (buf, false, false, hhmm, ndigits);
 	result |= compare (buf, expect, nresult);
 
-	expect = mkbuf (buf, true, hhmm, ndigits);
+	expect = mkbuf (buf, true, false, hhmm, ndigits);
+	result |= compare (buf, expect, nresult);
+
+        /* Test with colon as well.  */
+
+	expect = mkbuf (buf, false, true, hhmm, ndigits);
+	result |= compare (buf, expect, nresult);
+
+	expect = mkbuf (buf, true, true, hhmm, ndigits);
 	result |= compare (buf, expect, nresult);
       }
 
